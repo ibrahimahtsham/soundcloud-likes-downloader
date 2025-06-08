@@ -1,25 +1,24 @@
-import { useState } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, Container } from "@mui/material";
-import { lightTheme } from "./theme/lightTheme";
-import { darkTheme } from "./theme/darkTheme";
-import Home from "./pages/Homes"; // Fixed path - it's "Homes" not "Home"
-import ThemeToggle from "./components/ThemeToggle";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import { Home } from "./pages/Home.jsx";
+
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#ff5722",
+    },
+    secondary: {
+      main: "#2196f3",
+    },
+  },
+});
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="xl" sx={{ minHeight: "100vh", py: 2 }}>
-        <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
-        <Home />
-      </Container>
+      <Home />
     </ThemeProvider>
   );
 }

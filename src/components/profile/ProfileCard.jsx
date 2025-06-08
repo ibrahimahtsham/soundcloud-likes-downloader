@@ -1,27 +1,23 @@
-import React from "react";
 import {
   Box,
+  Paper,
   Typography,
   Avatar,
-  Paper,
   Chip,
   IconButton,
 } from "@mui/material";
-import { Person, Favorite, QueueMusic, OpenInNew } from "@mui/icons-material";
+import { OpenInNew, Person, Favorite, QueueMusic } from "@mui/icons-material";
+import { formatNumber } from "../../utils/formatters.js";
 
-function ProfileDisplay({ profile }) {
-  if (!profile) {
-    return null;
-  }
-
-  const { profile: profileData, likes = [], playlists = [] } = profile;
+export function ProfileCard({ profile, tracksCount = 0, playlistsCount = 0 }) {
+  if (!profile) return null;
 
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
         <Avatar
-          src={profileData.avatar_url}
-          alt={profileData.display_name}
+          src={profile.avatarUrl}
+          alt={profile.displayName}
           sx={{ width: 64, height: 64 }}
         >
           <Person />
@@ -30,23 +26,23 @@ function ProfileDisplay({ profile }) {
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="h5" component="h2">
-              {profileData.display_name || profileData.username}
+              {profile.displayName}
             </Typography>
             <IconButton
               size="small"
-              onClick={() => window.open(profileData.permalink_url, "_blank")}
+              onClick={() => window.open(profile.url, "_blank")}
             >
               <OpenInNew fontSize="small" />
             </IconButton>
           </Box>
 
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            @{profileData.username}
+            @{profile.username}
           </Typography>
 
-          {profileData.description && (
+          {profile.description && (
             <Typography variant="body2" sx={{ mt: 1 }}>
-              {profileData.description}
+              {profile.description}
             </Typography>
           )}
         </Box>
@@ -55,19 +51,25 @@ function ProfileDisplay({ profile }) {
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 2 }}>
         <Chip
           icon={<Favorite />}
-          label={`${likes.length} Likes`}
+          label={`${tracksCount} Likes`}
           variant="outlined"
           color="primary"
         />
         <Chip
           icon={<QueueMusic />}
-          label={`${playlists.length} Playlists`}
+          label={`${playlistsCount} Playlists`}
           variant="outlined"
           color="secondary"
         />
-        {profileData.followers_count > 0 && (
+        {profile.followersCount > 0 && (
           <Chip
-            label={`${profileData.followers_count} Followers`}
+            label={`${formatNumber(profile.followersCount)} Followers`}
+            variant="outlined"
+          />
+        )}
+        {profile.trackCount > 0 && (
+          <Chip
+            label={`${formatNumber(profile.trackCount)} Tracks`}
             variant="outlined"
           />
         )}
@@ -75,5 +77,3 @@ function ProfileDisplay({ profile }) {
     </Paper>
   );
 }
-
-export default ProfileDisplay;
