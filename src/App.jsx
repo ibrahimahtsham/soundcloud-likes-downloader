@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import { CssBaseline, Container } from "@mui/material";
+import { lightTheme } from "./theme/lightTheme";
+import { darkTheme } from "./theme/darkTheme";
+import Home from "./pages/Homes"; // Fixed path - it's "Homes" not "Home"
+import ThemeToggle from "./components/ThemeToggle";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <CssBaseline />
+      <Container maxWidth="xl" sx={{ minHeight: "100vh", py: 2 }}>
+        <ThemeToggle isDarkMode={isDarkMode} onToggle={toggleTheme} />
+        <Home />
+      </Container>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
