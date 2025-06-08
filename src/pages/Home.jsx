@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { ProfileForm } from "../components/profile/ProfileForm.jsx";
 import { ProfileCard } from "../components/profile/ProfileCard.jsx";
+import { TracksList } from "../components/cards/TracksList.jsx";
+import { PlaylistsList } from "../components/cards/PlaylistsList.jsx";
 import { ThemeToggle } from "../components/ThemeToggle.jsx";
 import { useProfile } from "../hooks/useProfile.js";
 import { usePlaylists } from "../hooks/usePlaylists.js";
@@ -91,63 +93,19 @@ export function Home() {
             </Tabs>
 
             {tabValue === 0 && (
-              <Box sx={{ mt: 2 }}>
-                {tracksLoading && <Typography>Loading likes...</Typography>}
-                {tracksError && (
-                  <Typography color="error">{tracksError}</Typography>
-                )}
-                {tracks.map((track, index) => (
-                  <Box
-                    key={index}
-                    sx={{ p: 2, border: 1, borderColor: "divider", mb: 1 }}
-                  >
-                    <Typography variant="h6">
-                      <a
-                        href={track.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {track.name}
-                      </a>
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      by {track.author} • {track.type} •{" "}
-                      {new Date(track.publishedAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
+              <TracksList
+                tracks={tracks}
+                loading={tracksLoading}
+                error={tracksError}
+              />
             )}
 
             {tabValue === 1 && (
-              <Box sx={{ mt: 2 }}>
-                {playlistsLoading && (
-                  <Typography>Loading playlists...</Typography>
-                )}
-                {playlistsError && (
-                  <Typography color="error">{playlistsError}</Typography>
-                )}
-                {playlists.map((playlist, index) => (
-                  <Box
-                    key={index}
-                    sx={{ p: 2, border: 1, borderColor: "divider", mb: 1 }}
-                  >
-                    <Typography variant="h6">
-                      <a
-                        href={playlist.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {playlist.name}
-                      </a>
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      by {playlist.author} •{" "}
-                      {new Date(playlist.publishedAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
+              <PlaylistsList
+                playlists={playlists}
+                loading={playlistsLoading}
+                error={playlistsError}
+              />
             )}
           </Box>
         )}
