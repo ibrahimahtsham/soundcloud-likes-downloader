@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/soundcloud-likes-downloader/assets/favicon-CKUydegC.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Load and explore SoundCloud profiles" />
+    <meta name="keywords" content="SoundCloud, profile, loader, music" />
+    <meta name="author" content="SoundCloud Profile Loader" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SoundCloud Profile Loader" />
+    <meta
+      property="og:description"
+      content="Load and explore SoundCloud profiles"
+    />
+    <meta property="og:image" content="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20width='24'%20height='24'%3e%3cpath%20fill='%23ff5722'%20d='M19.35%2010.04C18.67%206.59%2015.64%204%2012%204%209.11%204%206.6%205.64%205.35%208.04%202.34%208.36%200%2010.91%200%2014c0%203.31%202.69%206%206%206h13c2.76%200%205-2.24%205-5%200-2.64-2.05-4.78-4.65-4.96M17%2013l-5%205-5-5h3V9h4v4z'%3e%3c/path%3e%3c/svg%3e" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="SoundCloud Profile Loader" />
+    <meta
+      property="twitter:description"
+      content="Load and explore SoundCloud profiles"
+    />
+    <meta property="twitter:image" content="/favicon.svg" />
+
+    <title>SoundCloud Profile Loader</title>
+
+    <!-- Preload critical fonts (if using custom fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#ff5722" />
+
+    <!-- Prevent FOUC (Flash of Unstyled Content) -->
+    <style>
+      html {
+        background-color: #0a0a0a;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          sans-serif;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      /* Loading spinner */
+      .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 4px solid #333;
+        border-top: 4px solid #ff5722;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/soundcloud-likes-downloader/assets/index-CKVW1ZZO.js"></script>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading indicator while React loads -->
+      <div class="loading-spinner"></div>
+    </div>
+  </body>
+</html>
