@@ -4,38 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Load and explore SoundCloud profiles" />
-    <meta name="keywords" content="SoundCloud, profile, loader, music" />
-    <meta name="author" content="SoundCloud Profile Loader" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="SoundCloud Profile Loader" />
-    <meta
-      property="og:description"
-      content="Load and explore SoundCloud profiles"
-    />
-    <meta property="og:image" content="/favicon.svg" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="SoundCloud Profile Loader" />
-    <meta
-      property="twitter:description"
-      content="Load and explore SoundCloud profiles"
-    />
-    <meta property="twitter:image" content="/favicon.svg" />
-
     <title>SoundCloud Profile Loader</title>
 
-    <!-- Preload critical fonts (if using custom fonts) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Theme color for mobile browsers -->
-    <meta name="theme-color" content="#ff5722" />
-
-    <!-- Prevent FOUC (Flash of Unstyled Content) -->
     <style>
       html {
         background-color: #0a0a0a;
@@ -48,34 +18,10 @@
       #root {
         min-height: 100vh;
       }
-      /* Loading spinner */
-      .loading-spinner {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 40px;
-        height: 40px;
-        border: 4px solid #333;
-        border-top: 4px solid #ff5722;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: translate(-50%, -50%) rotate(0deg);
-        }
-        100% {
-          transform: translate(-50%, -50%) rotate(360deg);
-        }
-      }
     </style>
   </head>
   <body>
-    <div id="root">
-      <!-- Loading indicator while React loads -->
-      <div class="loading-spinner"></div>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
