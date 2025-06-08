@@ -1,6 +1,6 @@
 /**
  * SoundCloud API Client
- * Handles all SoundCloud data fetching operations
+ * Handles SoundCloud profile data fetching operations
  */
 
 const CORS_PROXY = "https://api.allorigins.win/get?url=";
@@ -26,44 +26,6 @@ export class SoundCloudClient {
     } catch (error) {
       console.error(`❌ Failed to fetch profile for ${username}:`, error);
       throw new Error(`Failed to load profile: ${error.message}`);
-    }
-  }
-
-  /**
-   * Fetch user's liked tracks
-   * @param {string} username - SoundCloud username
-   * @returns {Promise<Array>} Array of tracks
-   */
-  async fetchLikes(username) {
-    console.log(`❤️ Fetching likes for: ${username}`);
-
-    try {
-      const likesUrl = `${this.baseUrl}/${username}/likes`;
-      const response = await this._fetchWithProxy(likesUrl);
-
-      return this._extractTracksData(response, "likes");
-    } catch (error) {
-      console.error(`❌ Failed to fetch likes for ${username}:`, error);
-      return [];
-    }
-  }
-
-  /**
-   * Fetch user's playlists
-   * @param {string} username - SoundCloud username
-   * @returns {Promise<Array>} Array of playlists
-   */
-  async fetchPlaylists(username) {
-    console.log(`📝 Fetching playlists for: ${username}`);
-
-    try {
-      const playlistsUrl = `${this.baseUrl}/${username}/sets`;
-      const response = await this._fetchWithProxy(playlistsUrl);
-
-      return this._extractPlaylistsData(response, "playlists");
-    } catch (error) {
-      console.error(`❌ Failed to fetch playlists for ${username}:`, error);
-      return [];
     }
   }
 
@@ -122,68 +84,6 @@ export class SoundCloudClient {
   }
 
   /**
-   * Extract tracks data from HTML
-   * @private
-   */
-  _extractTracksData(html, source) {
-    const tracks = [];
-    const hydrationData = this._extractHydrationData(html);
-
-    console.log(
-      `🔍 Available data types in ${source}:`,
-      hydrationData.map((item) => item.hydratable)
-    );
-
-    for (const item of hydrationData) {
-      if (item.hydratable === "sounds" && Array.isArray(item.data)) {
-        console.log(`🎵 Found ${item.data.length} sounds in ${source}`);
-        item.data.forEach((track) => tracks.push(this._parseTrack(track)));
-      } else if (item.hydratable === "stream" && Array.isArray(item.data)) {
-        console.log(`🎵 Found ${item.data.length} stream items in ${source}`);
-        item.data.forEach((streamItem) => {
-          if (streamItem.track) {
-            tracks.push(this._parseTrack(streamItem.track));
-          }
-        });
-      }
-    }
-
-    console.log(`📊 Extracted ${tracks.length} tracks from ${source}`);
-    return tracks;
-  }
-
-  /**
-   * Extract playlists data from HTML
-   * @private
-   */
-  _extractPlaylistsData(html, source) {
-    const playlists = [];
-    const hydrationData = this._extractHydrationData(html);
-
-    console.log(
-      `🔍 Available data types in ${source}:`,
-      hydrationData.map((item) => item.hydratable)
-    );
-
-    for (const item of hydrationData) {
-      if (item.hydratable === "playlists" && Array.isArray(item.data)) {
-        console.log(`📝 Found ${item.data.length} playlists in ${source}`);
-        item.data.forEach((playlist) =>
-          playlists.push(this._parsePlaylist(playlist))
-        );
-      } else if (item.hydratable === "sets" && Array.isArray(item.data)) {
-        console.log(`📝 Found ${item.data.length} sets in ${source}`);
-        item.data.forEach((playlist) =>
-          playlists.push(this._parsePlaylist(playlist))
-        );
-      }
-    }
-
-    console.log(`📊 Extracted ${playlists.length} playlists from ${source}`);
-    return playlists;
-  }
-
-  /**
    * Extract hydration data from HTML
    * @private
    */
@@ -199,64 +99,6 @@ export class SoundCloudClient {
     }
 
     return [];
-  }
-
-  /**
-   * Parse track data
-   * @private
-   */
-  _parseTrack(track) {
-    return {
-      id: track.id,
-      title: track.title || "Untitled",
-      artist: track.user
-        ? {
-            id: track.user.id,
-            username: track.user.permalink,
-            displayName: track.user.full_name || track.user.username,
-          }
-        : null,
-      duration: track.duration || 0,
-      createdAt: track.created_at,
-      genre: track.genre || "",
-      url: track.permalink_url || "",
-      artworkUrl: track.artwork_url || "",
-      playCount: track.playback_count || 0,
-      likesCount: track.likes_count || 0,
-      commentCount: track.comment_count || 0,
-      description: track.description || "",
-      downloadable: track.downloadable || false,
-      streamable: track.streamable !== false,
-    };
-  }
-
-  /**
-   * Parse playlist data
-   * @private
-   */
-  _parsePlaylist(playlist) {
-    return {
-      id: playlist.id,
-      title: playlist.title || "Untitled Playlist",
-      description: playlist.description || "",
-      user: playlist.user
-        ? {
-            id: playlist.user.id,
-            username: playlist.user.permalink,
-            displayName: playlist.user.full_name || playlist.user.username,
-          }
-        : null,
-      trackCount: playlist.track_count || 0,
-      duration: playlist.duration || 0,
-      createdAt: playlist.created_at,
-      url: playlist.permalink_url || "",
-      artworkUrl: playlist.artwork_url || "",
-      tracks: playlist.tracks
-        ? playlist.tracks.map((track) => this._parseTrack(track))
-        : [],
-      public: playlist.public !== false,
-      likesCount: playlist.likes_count || 0,
-    };
   }
 }
 

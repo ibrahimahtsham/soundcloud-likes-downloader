@@ -6,10 +6,10 @@ import {
   Chip,
   IconButton,
 } from "@mui/material";
-import { OpenInNew, Person, Favorite, QueueMusic } from "@mui/icons-material";
+import { OpenInNew, Person } from "@mui/icons-material";
 import { formatNumber } from "../../utils/formatters.js";
 
-export function ProfileCard({ profile, tracksCount = 0, playlistsCount = 0 }) {
+export function ProfileCard({ profile }) {
   if (!profile) return null;
 
   return (
@@ -49,22 +49,18 @@ export function ProfileCard({ profile, tracksCount = 0, playlistsCount = 0 }) {
       </Box>
 
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 2 }}>
-        <Chip
-          icon={<Favorite />}
-          label={`${tracksCount} Likes`}
-          variant="outlined"
-          color="primary"
-        />
-        <Chip
-          icon={<QueueMusic />}
-          label={`${playlistsCount} Playlists`}
-          variant="outlined"
-          color="secondary"
-        />
         {profile.followersCount > 0 && (
           <Chip
             label={`${formatNumber(profile.followersCount)} Followers`}
             variant="outlined"
+            color="primary"
+          />
+        )}
+        {profile.followingCount > 0 && (
+          <Chip
+            label={`${formatNumber(profile.followingCount)} Following`}
+            variant="outlined"
+            color="secondary"
           />
         )}
         {profile.trackCount > 0 && (
@@ -72,6 +68,15 @@ export function ProfileCard({ profile, tracksCount = 0, playlistsCount = 0 }) {
             label={`${formatNumber(profile.trackCount)} Tracks`}
             variant="outlined"
           />
+        )}
+        {profile.playlistCount > 0 && (
+          <Chip
+            label={`${formatNumber(profile.playlistCount)} Playlists`}
+            variant="outlined"
+          />
+        )}
+        {profile.verified && (
+          <Chip label="Verified" variant="outlined" color="success" />
         )}
       </Box>
     </Paper>
