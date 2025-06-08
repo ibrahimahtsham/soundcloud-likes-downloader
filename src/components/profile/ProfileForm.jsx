@@ -7,13 +7,32 @@ import {
   CircularProgress,
   Paper,
   Typography,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
+import { Search as SearchIcon, BugReport } from "@mui/icons-material";
 import { isValidSoundCloudUrl } from "../../utils/validators.js";
+import { httpClient } from "../../api/soundcloud/http.js";
 
 export function ProfileForm({ onSubmit, loading, error }) {
   const [url, setUrl] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [debugMode, setDebugMode] = useState(false);
+
+  // Toggle debug mode
+  const handleDebugToggle = (event) => {
+    const enabled = event.target.checked;
+    setDebugMode(enabled);
+    httpClient.setDebug(enabled);
+
+    if (enabled) {
+      console.log(
+        "🐛 Debug mode enabled - Raw responses will be logged to console"
+      );
+    } else {
+      console.log("🔇 Debug mode disabled");
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,9 +58,33 @@ export function ProfileForm({ onSubmit, loading, error }) {
 
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Load SoundCloud Profile
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h6">Load SoundCloud Profile</Typography>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={debugMode}
+              onChange={handleDebugToggle}
+              color="secondary"
+              size="small"
+            />
+          }
+          label={
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <BugReport fontSize="small" />
+              <Typography variant="caption">Debug</Typography>
+            </Box>
+          }
+        />
+      </Box>
 
       <Box component="form" onSubmit={handleSubmit}>
         <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
@@ -71,6 +114,13 @@ export function ProfileForm({ onSubmit, loading, error }) {
           </Button>
         </Box>
       </Box>
+
+      {debugMode && (
+        <Alert severity="info" sx={{ mt: 2 }}>
+          Debug mode is enabled. Raw HTML responses will be logged to the
+          browser console.
+        </Alert>
+      )}
 
       {error && (
         <Alert severity="error" sx={{ mt: 2 }}>

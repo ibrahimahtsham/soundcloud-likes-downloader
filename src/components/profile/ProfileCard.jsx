@@ -45,6 +45,20 @@ export function ProfileCard({ profile }) {
               {profile.description}
             </Typography>
           )}
+
+          {profile.createdAt && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 1, display: "block" }}
+            >
+              Member since{" "}
+              {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+              })}
+            </Typography>
+          )}
         </Box>
       </Box>
 
@@ -75,9 +89,37 @@ export function ProfileCard({ profile }) {
             variant="outlined"
           />
         )}
+        {profile.likesCount > 0 && (
+          <Chip
+            label={`${formatNumber(profile.likesCount)} Likes`}
+            variant="outlined"
+            color="info"
+          />
+        )}
+        {profile.repostsCount > 0 && (
+          <Chip
+            label={`${formatNumber(profile.repostsCount)} Reposts`}
+            variant="outlined"
+            color="warning"
+          />
+        )}
         {profile.verified && (
           <Chip label="Verified" variant="outlined" color="success" />
         )}
+        {profile.badges?.pro && (
+          <Chip label="Pro" variant="outlined" color="warning" />
+        )}
+        {profile.badges?.pro_unlimited && (
+          <Chip label="Pro Unlimited" variant="outlined" color="error" />
+        )}
+        {profile.creatorSubscription?.product?.id &&
+          profile.creatorSubscription.product.id !== "free" && (
+            <Chip
+              label={profile.creatorSubscription.product.id.toUpperCase()}
+              variant="outlined"
+              color="success"
+            />
+          )}
       </Box>
     </Paper>
   );

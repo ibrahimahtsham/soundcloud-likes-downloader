@@ -13,13 +13,30 @@ export class HtmlParser {
 
     if (match) {
       try {
-        return JSON.parse(match[1]);
+        const hydrationData = JSON.parse(match[1]);
+
+        // Organize data by type for easier access
+        const organizedData = {
+          user: null,
+          features: null,
+          geoip: null,
+          privacySettings: null,
+          anonymousId: null,
+        };
+
+        hydrationData.forEach((item) => {
+          if (item.hydratable && item.data) {
+            organizedData[item.hydratable] = item.data;
+          }
+        });
+
+        return organizedData;
       } catch (error) {
         console.error("Failed to parse hydration data:", error);
       }
     }
 
-    return [];
+    return {};
   }
 
   /**
@@ -46,6 +63,34 @@ export class HtmlParser {
     const seconds = parseInt(match[3] || 0);
 
     return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  /**
+   * Extract meta tag data
+   * @param {string} html - HTML content
+   * @returns {Object} Meta tag data
+   */
+  extractMetaData(html) {
+    const doc = this.parseHtml(html);
+    const metaData = {};
+
+    // Extract SoundCloud specific meta tags
+    const soundCloudMetas = doc.querySelectorAll('meta[property^="soundcloud:"]');
+    soundCloudMetas.forEach((meta) => {
+      const property = meta.getAttribute("property").replace("soundcloud:", "");
+      metaData[property] = meta.getAttribute("content");
+    });
+
+    // Extract other useful meta tags
+    const otherMetas = doc.querySelectorAll('meta[property^="og:"], meta[property^="twitter:"]');
+    otherMetas.forEach((meta) => {
+      const property = meta.getAttribute("property") || meta.getAttribute("name");
+      if (property) {
+        metaData[property] = meta.getAttribute("content");
+      }
+    });
+
+    return metaData;
   }
 }
 

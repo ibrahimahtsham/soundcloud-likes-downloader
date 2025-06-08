@@ -7,6 +7,15 @@ const CORS_PROXY = "https://api.allorigins.win/get?url=";
 export class HttpClient {
   constructor(baseUrl = "https://soundcloud.com") {
     this.baseUrl = baseUrl;
+    this.debug = false; // Add debug flag
+  }
+
+  /**
+   * Enable or disable debug logging
+   * @param {boolean} enabled - Whether to enable debug logging
+   */
+  setDebug(enabled) {
+    this.debug = enabled;
   }
 
   /**
@@ -16,6 +25,12 @@ export class HttpClient {
    */
   async fetchWithProxy(url) {
     const proxyUrl = `${CORS_PROXY}${encodeURIComponent(url)}`;
+
+    if (this.debug) {
+      console.log(`🌐 Fetching URL: ${url}`);
+      console.log(`🔗 Proxy URL: ${proxyUrl}`);
+    }
+
     const response = await fetch(proxyUrl);
 
     if (!response.ok) {
@@ -26,6 +41,16 @@ export class HttpClient {
 
     if (!data.contents) {
       throw new Error("No content received from proxy");
+    }
+
+    if (this.debug) {
+      console.log(`📄 Raw HTML Response (${data.contents.length} characters):`);
+      console.log(data.contents);
+      console.log(`📊 Response Stats:`, {
+        length: data.contents.length,
+        url: data.status?.url || url,
+        status: data.status?.http_code || "unknown",
+      });
     }
 
     return data.contents;
