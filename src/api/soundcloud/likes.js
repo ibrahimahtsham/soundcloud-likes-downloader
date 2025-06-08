@@ -35,7 +35,8 @@ export class LikesService {
     const likes = [];
     const doc = htmlParser.parseHtml(html);
 
-    const likeArticles = doc.querySelectorAll("article");
+    // More specific selector to avoid profile article container
+    const likeArticles = doc.querySelectorAll("noscript section article");
 
     likeArticles.forEach((article) => {
       const nameLink = article.querySelector(
