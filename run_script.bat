@@ -21,15 +21,13 @@ echo ========================================
 echo Choose an option:
 echo 1) Start dev server
 echo 2) Deploy to GitHub Pages
-echo 3) Preview production build
-echo 4) Exit
-set /p choice=Enter your choice [1-4]: 
+echo 3) Exit
+set /p choice=Enter your choice [1-3]: 
 
 if "%choice%"=="1" goto dev
 if "%choice%"=="2" goto deploy
-if "%choice%"=="3" goto preview
-if "%choice%"=="4" goto exit
-echo Invalid choice. Please select 1-4.
+if "%choice%"=="3" goto exit
+echo Invalid choice. Please select 1-3.
 goto menu
 
 :dev
@@ -64,22 +62,9 @@ if errorlevel 1 (
     goto end
 )
 echo Successfully deployed to GitHub Pages!
-echo Opening GitHub repository in your default browser...
+echo Opening GitHub Actions page in your default browser...
 timeout /t 2 /nobreak
-start https://github.com/ibrahimahtsham/soundcloud-likes-downloader
-goto end
-
-:preview
-echo Starting preview server for production build...
-echo Make sure you have built the project first!
-echo Building for production first...
-call npx vite build
-if errorlevel 1 (
-    echo Build failed. Cannot preview.
-    goto end
-)
-echo Starting preview server...
-call npx vite preview --port 4173 --open
+start https://github.com/ibrahimahtsham/soundcloud-likes-downloader/actions/
 goto end
 
 :exit
