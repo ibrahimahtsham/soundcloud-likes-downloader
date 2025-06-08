@@ -1,24 +1,25 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { Home } from "./pages/Home.jsx";
+import { ThemeProvider, useTheme } from "./hooks/useTheme.jsx";
+import { createAppTheme } from "./utils/theme.js";
 
-const theme = createTheme({
-  palette: {
-    mode: "dark",
-    primary: {
-      main: "#ff5722",
-    },
-    secondary: {
-      main: "#2196f3",
-    },
-  },
-});
+function AppContent() {
+  const { mode } = useTheme();
+  const theme = createAppTheme(mode);
+
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <Home />
+    </MuiThemeProvider>
+  );
+}
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Home />
+    <ThemeProvider>
+      <AppContent />
     </ThemeProvider>
   );
 }
