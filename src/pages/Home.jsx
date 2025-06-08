@@ -86,11 +86,40 @@ export function Home() {
         {profile && (
           <Box sx={{ mt: 3 }}>
             <Tabs value={tabValue} onChange={handleTabChange} centered>
-              <Tab label={`Playlists (${playlists.length})`} />
               <Tab label={`Likes (${tracks.length})`} />
+              <Tab label={`Playlists (${playlists.length})`} />
             </Tabs>
 
             {tabValue === 0 && (
+              <Box sx={{ mt: 2 }}>
+                {tracksLoading && <Typography>Loading likes...</Typography>}
+                {tracksError && (
+                  <Typography color="error">{tracksError}</Typography>
+                )}
+                {tracks.map((track, index) => (
+                  <Box
+                    key={index}
+                    sx={{ p: 2, border: 1, borderColor: "divider", mb: 1 }}
+                  >
+                    <Typography variant="h6">
+                      <a
+                        href={track.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {track.name}
+                      </a>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      by {track.author} • {track.type} •{" "}
+                      {new Date(track.publishedAt).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+
+            {tabValue === 1 && (
               <Box sx={{ mt: 2 }}>
                 {playlistsLoading && (
                   <Typography>Loading playlists...</Typography>
@@ -115,35 +144,6 @@ export function Home() {
                     <Typography variant="body2" color="text.secondary">
                       by {playlist.author} •{" "}
                       {new Date(playlist.publishedAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            )}
-
-            {tabValue === 1 && (
-              <Box sx={{ mt: 2 }}>
-                {tracksLoading && <Typography>Loading likes...</Typography>}
-                {tracksError && (
-                  <Typography color="error">{tracksError}</Typography>
-                )}
-                {tracks.map((track, index) => (
-                  <Box
-                    key={index}
-                    sx={{ p: 2, border: 1, borderColor: "divider", mb: 1 }}
-                  >
-                    <Typography variant="h6">
-                      <a
-                        href={track.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {track.name}
-                      </a>
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      by {track.author} • {track.type} •{" "}
-                      {new Date(track.publishedAt).toLocaleDateString()}
                     </Typography>
                   </Box>
                 ))}
