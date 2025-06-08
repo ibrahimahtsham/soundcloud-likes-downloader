@@ -1,7 +1,7 @@
-import { Box, Typography, Chip, IconButton } from "@mui/material";
+import { Box, Typography, Chip, IconButton, Checkbox } from "@mui/material";
 import { OpenInNew, MusicNote, QueueMusic } from "@mui/icons-material";
 
-export function TrackCard({ track }) {
+export function TrackCard({ track, selected, onSelectionChange }) {
   const isPlaylist = track.type === "playlist";
 
   return (
@@ -9,16 +9,21 @@ export function TrackCard({ track }) {
       sx={{
         p: 2,
         border: 1,
-        borderColor: "divider",
+        borderColor: selected ? "primary.main" : "divider",
         borderRadius: 1,
         mb: 1,
-        backgroundColor: "background.paper",
+        backgroundColor: selected ? "action.selected" : "background.paper",
         "&:hover": {
           backgroundColor: "action.hover",
         },
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+        <Checkbox
+          checked={selected}
+          onChange={(e) => onSelectionChange(track, e.target.checked)}
+          size="small"
+        />
         {isPlaylist ? <QueueMusic /> : <MusicNote />}
         <Typography variant="h6" sx={{ flex: 1, fontWeight: 500 }}>
           {track.name}
@@ -26,7 +31,7 @@ export function TrackCard({ track }) {
         <IconButton
           size="small"
           onClick={() => window.open(track.url, "_blank")}
-          sx={{ ml: "auto" }}
+          sx={{ ml: 1 }}
         >
           <OpenInNew fontSize="small" />
         </IconButton>

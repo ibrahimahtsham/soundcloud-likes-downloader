@@ -6,6 +6,7 @@ import {
   Toolbar,
   Tabs,
   Tab,
+  Alert,
 } from "@mui/material";
 import { ProfileForm } from "../components/profile/ProfileForm.jsx";
 import { ProfileCard } from "../components/profile/ProfileCard.jsx";
@@ -15,11 +16,13 @@ import { ThemeToggle } from "../components/ThemeToggle.jsx";
 import { useProfile } from "../hooks/useProfile.js";
 import { usePlaylists } from "../hooks/usePlaylists.js";
 import { useTracks } from "../hooks/useTracks.js";
+import { useDownload } from "../hooks/useDownload.js";
 import { useState } from "react";
 import { extractUsername } from "../utils/validators.js";
 
 export function Home() {
   const [tabValue, setTabValue] = useState(0);
+  const [selectedTracks, setSelectedTracks] = useState([]);
 
   const {
     profile,
@@ -42,9 +45,14 @@ export function Home() {
     fetchTracks,
   } = useTracks();
 
+  const { downloading, downloadError, downloadMultiple } = useDownload();
+
   const handleProfileSubmit = async (profileUrl) => {
     const username = extractUsername(profileUrl);
     if (!username) return;
+
+    // Clear previous selections
+    setSelectedTracks([]);
 
     await fetchProfile(profileUrl);
 
@@ -54,6 +62,32 @@ export function Home() {
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
+    // Clear selections when switching tabs
+    setSelectedTracks([]);
+  };
+
+  // Selection handlers
+  const handleTrackSelection = (track, isSelected) => {
+    if (isSelected) {
+      setSelectedTracks((prev) => [...prev, track]);
+    } else {
+      setSelectedTracks((prev) => prev.filter((t) => t.slug !== track.slug));
+    }
+  };
+
+  const handleSelectAll = () => {
+    setSelectedTracks([...tracks]);
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedTracks([]);
+  };
+
+  // Download handlers
+  const handleDownloadSelected = () => {
+    if (selectedTracks.length > 0) {
+      downloadMultiple(selectedTracks);
+    }
   };
 
   return (
@@ -85,6 +119,19 @@ export function Home() {
 
         {profile && <ProfileCard profile={profile} />}
 
+        {/* Download Status */}
+        {downloading && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Download in progress... Please wait.
+          </Alert>
+        )}
+
+        {downloadError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {downloadError}
+          </Alert>
+        )}
+
         {profile && (
           <Box sx={{ mt: 3 }}>
             <Tabs value={tabValue} onChange={handleTabChange} centered>
@@ -97,6 +144,11 @@ export function Home() {
                 tracks={tracks}
                 loading={tracksLoading}
                 error={tracksError}
+                selectedTracks={selectedTracks}
+                onSelectionChange={handleTrackSelection}
+                onSelectAll={handleSelectAll}
+                onDeselectAll={handleDeselectAll}
+                onDownloadSelected={handleDownloadSelected}
               />
             )}
 
