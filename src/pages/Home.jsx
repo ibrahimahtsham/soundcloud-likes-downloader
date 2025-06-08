@@ -23,6 +23,7 @@ import { extractUsername } from "../utils/validators.js";
 export function Home() {
   const [tabValue, setTabValue] = useState(0);
   const [selectedTracks, setSelectedTracks] = useState([]);
+  const [selectedPlaylists, setSelectedPlaylists] = useState([]);
 
   const {
     profile,
@@ -53,6 +54,7 @@ export function Home() {
 
     // Clear previous selections
     setSelectedTracks([]);
+    setSelectedPlaylists([]);
 
     await fetchProfile(profileUrl);
 
@@ -64,9 +66,10 @@ export function Home() {
     setTabValue(newValue);
     // Clear selections when switching tabs
     setSelectedTracks([]);
+    setSelectedPlaylists([]);
   };
 
-  // Selection handlers
+  // Track selection handlers
   const handleTrackSelection = (track, isSelected) => {
     if (isSelected) {
       setSelectedTracks((prev) => [...prev, track]);
@@ -75,16 +78,35 @@ export function Home() {
     }
   };
 
-  const handleSelectAll = () => {
+  const handleSelectAllTracks = () => {
     setSelectedTracks([...tracks]);
   };
 
-  const handleDeselectAll = () => {
+  const handleDeselectAllTracks = () => {
     setSelectedTracks([]);
   };
 
+  // Playlist selection handlers
+  const handlePlaylistSelection = (playlist, isSelected) => {
+    if (isSelected) {
+      setSelectedPlaylists((prev) => [...prev, playlist]);
+    } else {
+      setSelectedPlaylists((prev) =>
+        prev.filter((p) => p.slug !== playlist.slug)
+      );
+    }
+  };
+
+  const handleSelectAllPlaylists = () => {
+    setSelectedPlaylists([...playlists]);
+  };
+
+  const handleDeselectAllPlaylists = () => {
+    setSelectedPlaylists([]);
+  };
+
   // Download handlers
-  const handleDownloadSelected = () => {
+  const handleDownloadSelectedTracks = () => {
     if (selectedTracks.length > 0) {
       downloadMultiple(selectedTracks);
     }
@@ -146,9 +168,9 @@ export function Home() {
                 error={tracksError}
                 selectedTracks={selectedTracks}
                 onSelectionChange={handleTrackSelection}
-                onSelectAll={handleSelectAll}
-                onDeselectAll={handleDeselectAll}
-                onDownloadSelected={handleDownloadSelected}
+                onSelectAll={handleSelectAllTracks}
+                onDeselectAll={handleDeselectAllTracks}
+                onDownloadSelected={handleDownloadSelectedTracks}
               />
             )}
 
@@ -157,6 +179,10 @@ export function Home() {
                 playlists={playlists}
                 loading={playlistsLoading}
                 error={playlistsError}
+                selectedPlaylists={selectedPlaylists}
+                onSelectionChange={handlePlaylistSelection}
+                onSelectAll={handleSelectAllPlaylists}
+                onDeselectAll={handleDeselectAllPlaylists}
               />
             )}
           </Box>

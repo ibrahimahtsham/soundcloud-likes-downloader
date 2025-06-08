@@ -1,23 +1,28 @@
-import { Box, Typography, Chip, IconButton } from "@mui/material";
+import { Box, Typography, Chip, IconButton, Checkbox } from "@mui/material";
 import { OpenInNew, QueueMusic, AccessTime } from "@mui/icons-material";
 import { formatDuration } from "../../utils/formatters.js";
 
-export function PlaylistCard({ playlist }) {
+export function PlaylistCard({ playlist, selected, onSelectionChange }) {
   return (
     <Box
       sx={{
         p: 2,
         border: 1,
-        borderColor: "divider",
+        borderColor: selected ? "primary.main" : "divider",
         borderRadius: 1,
         mb: 1,
-        backgroundColor: "background.paper",
+        backgroundColor: selected ? "action.selected" : "background.paper",
         "&:hover": {
           backgroundColor: "action.hover",
         },
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+        <Checkbox
+          checked={selected}
+          onChange={(e) => onSelectionChange(playlist, e.target.checked)}
+          size="small"
+        />
         <QueueMusic />
         <Typography variant="h6" sx={{ flex: 1, fontWeight: 500 }}>
           {playlist.name}
@@ -25,7 +30,7 @@ export function PlaylistCard({ playlist }) {
         <IconButton
           size="small"
           onClick={() => window.open(playlist.url, "_blank")}
-          sx={{ ml: "auto" }}
+          sx={{ ml: 1 }}
         >
           <OpenInNew fontSize="small" />
         </IconButton>
