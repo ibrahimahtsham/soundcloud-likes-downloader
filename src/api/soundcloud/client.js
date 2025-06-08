@@ -30,6 +30,44 @@ export class SoundCloudClient {
   }
 
   /**
+   * Fetch user playlists
+   * @param {string} username - SoundCloud username
+   * @returns {Promise<Array>} Playlists data
+   */
+  async fetchPlaylists(username) {
+    console.log(`🔍 Fetching playlists for: ${username}`);
+
+    try {
+      const playlistsUrl = `${this.baseUrl}/${username}/sets`;
+      const response = await this._fetchWithProxy(playlistsUrl);
+
+      return this._extractPlaylistsData(response);
+    } catch (error) {
+      console.error(`❌ Failed to fetch playlists for ${username}:`, error);
+      throw new Error(`Failed to load playlists: ${error.message}`);
+    }
+  }
+
+  /**
+   * Fetch user likes
+   * @param {string} username - SoundCloud username
+   * @returns {Promise<Array>} Likes data
+   */
+  async fetchLikes(username) {
+    console.log(`🔍 Fetching likes for: ${username}`);
+
+    try {
+      const likesUrl = `${this.baseUrl}/${username}/likes`;
+      const response = await this._fetchWithProxy(likesUrl);
+
+      return this._extractLikesData(response);
+    } catch (error) {
+      console.error(`❌ Failed to fetch likes for ${username}:`, error);
+      throw new Error(`Failed to load likes: ${error.message}`);
+    }
+  }
+
+  /**
    * Fetch with CORS proxy
    * @private
    */
@@ -99,6 +137,106 @@ export class SoundCloudClient {
     }
 
     return [];
+  }
+
+  /**
+   * Extract playlists data from HTML
+   * @private
+   */
+  _extractPlaylistsData(html) {
+    const playlists = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    const playlistArticles = doc.querySelectorAll(
+      'article[itemtype="http://schema.org/MusicPlaylist"]'
+    );
+
+    playlistArticles.forEach((article) => {
+      const nameLink = article.querySelector(
+        'h2[itemprop="name"] a[itemprop="url"]'
+      );
+      const authorLink = article.querySelector(
+        'h2 a[href^="/"][href*="/"]:not([itemprop="url"])'
+      );
+      const timeElement = article.querySelector("time[pubdate]");
+      const durationMeta = article.querySelector('meta[itemprop="duration"]');
+
+      if (nameLink) {
+        playlists.push({
+          name: nameLink.textContent.trim(),
+          url: `https://soundcloud.com${nameLink.getAttribute("href")}`,
+          slug: nameLink.getAttribute("href").split("/").pop(),
+          author: authorLink ? authorLink.textContent.trim() : "",
+          authorUrl: authorLink
+            ? `https://soundcloud.com${authorLink.getAttribute("href")}`
+            : "",
+          publishedAt: timeElement ? timeElement.getAttribute("datetime") : "",
+          duration: durationMeta
+            ? this._parseDuration(durationMeta.getAttribute("content"))
+            : 0,
+          type: "playlist",
+        });
+      }
+    });
+
+    return playlists;
+  }
+
+  /**
+   * Extract likes data from HTML
+   * @private
+   */
+  _extractLikesData(html) {
+    const likes = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    const likeArticles = doc.querySelectorAll("article");
+
+    likeArticles.forEach((article) => {
+      const nameLink = article.querySelector(
+        'h2[itemprop="name"] a[itemprop="url"]'
+      );
+      const authorLink = article.querySelector(
+        'h2 a[href^="/"][href*="/"]:not([itemprop="url"])'
+      );
+      const timeElement = article.querySelector("time[pubdate]");
+
+      if (nameLink) {
+        const href = nameLink.getAttribute("href");
+        const isPlaylist = href.includes("/sets/");
+
+        likes.push({
+          name: nameLink.textContent.trim(),
+          url: `https://soundcloud.com${href}`,
+          slug: href.split("/").pop(),
+          author: authorLink ? authorLink.textContent.trim() : "",
+          authorUrl: authorLink
+            ? `https://soundcloud.com${authorLink.getAttribute("href")}`
+            : "",
+          publishedAt: timeElement ? timeElement.getAttribute("datetime") : "",
+          type: isPlaylist ? "playlist" : "track",
+        });
+      }
+    });
+
+    return likes;
+  }
+
+  /**
+   * Parse ISO 8601 duration to seconds
+   * @private
+   */
+  _parseDuration(duration) {
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return 0;
+
+    const hours = parseInt(match[1] || 0);
+    const minutes = parseInt(match[2] || 0);
+    const seconds = parseInt(match[3] || 0);
+
+    return hours * 3600 + minutes * 60 + seconds;
   }
 }
 

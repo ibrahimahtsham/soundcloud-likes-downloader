@@ -1,10 +1,24 @@
-import { Box, Container, Typography, AppBar, Toolbar } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  AppBar,
+  Toolbar,
+  Tabs,
+  Tab,
+} from "@mui/material";
 import { ProfileForm } from "../components/profile/ProfileForm.jsx";
 import { ProfileCard } from "../components/profile/ProfileCard.jsx";
 import { ThemeToggle } from "../components/ThemeToggle.jsx";
 import { useProfile } from "../hooks/useProfile.js";
+import { usePlaylists } from "../hooks/usePlaylists.js";
+import { useTracks } from "../hooks/useTracks.js";
+import { useState } from "react";
+import { extractUsername } from "../utils/validators.js";
 
 export function Home() {
+  const [tabValue, setTabValue] = useState(0);
+
   const {
     profile,
     loading: profileLoading,
@@ -12,8 +26,32 @@ export function Home() {
     fetchProfile,
   } = useProfile();
 
+  const {
+    playlists,
+    loading: playlistsLoading,
+    error: playlistsError,
+    fetchPlaylists,
+  } = usePlaylists();
+
+  const {
+    tracks,
+    loading: tracksLoading,
+    error: tracksError,
+    fetchTracks,
+  } = useTracks();
+
   const handleProfileSubmit = async (profileUrl) => {
+    const username = extractUsername(profileUrl);
+    if (!username) return;
+
     await fetchProfile(profileUrl);
+
+    // Fetch playlists and likes after profile is loaded
+    await Promise.all([fetchPlaylists(username), fetchTracks(username)]);
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
   };
 
   return (
@@ -33,7 +71,7 @@ export function Home() {
             SoundCloud Profile Loader
           </Typography>
           <Typography variant="subtitle1" color="text.secondary">
-            Load and explore SoundCloud profiles
+            Load and explore SoundCloud profiles, playlists, and likes
           </Typography>
         </Box>
 
@@ -44,6 +82,75 @@ export function Home() {
         />
 
         {profile && <ProfileCard profile={profile} />}
+
+        {profile && (
+          <Box sx={{ mt: 3 }}>
+            <Tabs value={tabValue} onChange={handleTabChange} centered>
+              <Tab label={`Playlists (${playlists.length})`} />
+              <Tab label={`Likes (${tracks.length})`} />
+            </Tabs>
+
+            {tabValue === 0 && (
+              <Box sx={{ mt: 2 }}>
+                {playlistsLoading && (
+                  <Typography>Loading playlists...</Typography>
+                )}
+                {playlistsError && (
+                  <Typography color="error">{playlistsError}</Typography>
+                )}
+                {playlists.map((playlist, index) => (
+                  <Box
+                    key={index}
+                    sx={{ p: 2, border: 1, borderColor: "divider", mb: 1 }}
+                  >
+                    <Typography variant="h6">
+                      <a
+                        href={playlist.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {playlist.name}
+                      </a>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      by {playlist.author} •{" "}
+                      {new Date(playlist.publishedAt).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+
+            {tabValue === 1 && (
+              <Box sx={{ mt: 2 }}>
+                {tracksLoading && <Typography>Loading likes...</Typography>}
+                {tracksError && (
+                  <Typography color="error">{tracksError}</Typography>
+                )}
+                {tracks.map((track, index) => (
+                  <Box
+                    key={index}
+                    sx={{ p: 2, border: 1, borderColor: "divider", mb: 1 }}
+                  >
+                    <Typography variant="h6">
+                      <a
+                        href={track.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {track.name}
+                      </a>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      by {track.author} • {track.type} •{" "}
+                      {new Date(track.publishedAt).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
+        )}
       </Container>
     </>
   );
